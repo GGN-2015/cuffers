@@ -46,6 +46,23 @@ def save_content_and_return_hash(file_path, output_path, lpos, rpos, hash_functi
 
 
 
+# get an available summary file name
+def get_summary_file_name(output_path):
+    index = 0
+
+    # map index to file name
+    def get_filename_by_index(index) -> str:
+        return os.path.join(output_path, "summary.%d.json" % index)
+    
+    # availabel check
+    while os.path.isfile(get_filename_by_index(index)):
+        index += 1
+
+    # now "get_filename_by_index(index)" is an available summary file name
+    return get_filename_by_index(index)
+
+
+
 # split a large file into smaller files
 # return the count of the smaller file generated
 def split_file(file_path, output_path, max_file_size=1048675, hash_function=default_hash_function) -> int:
@@ -54,7 +71,7 @@ def split_file(file_path, output_path, max_file_size=1048675, hash_function=defa
 
     filename         = os.path.basename(file_path) # get the filename of the file
     bytes_count      = os.path.getsize(file_path)  # get the size of a certain file
-    output_json_path = os.path.join(output_path, "%s-summary.json" % filename)
+    output_json_path = get_summary_file_name(output_path)
 
     if bytes_count == 0: # do not generate any file if the file is empty
         generate_summary_json_file(filename, output_json_path, [])
