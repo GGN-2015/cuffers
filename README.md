@@ -17,4 +17,4 @@ python3 -m cuffers <input_file> <output_folder>
 ```bash
 python3 -m cuffers --merge <input_folder>
 ```
-a merged file will be generated based on the fractions in `<input_folder>` and the `name` stated in `<input_folder>/summary.<index>.json`.
+a merged file will be generated based on the fractions in `<input_folder>` and the `name` stated in `<input_folder>/summary.<index>.json`. the newly generated file will be placed right outside the folder `<input_folder>`, and if there has already been a file with the same name, the merge operation will be ignored (and you will get a warning output to stderr).
