@@ -1,8 +1,19 @@
 import os
 import hashlib
 import json
+import sys
+import string
+import random
+
 from tqdm import tqdm
 
+
+
+# generate random string for filename
+def generate_random_string(length=32):
+    characters = string.ascii_lowercase + string.ascii_uppercase + string.digits
+    random_string = ''.join(random.choice(characters) for _ in range(length))
+    return random_string
 
 
 # generate a json file with the name of all the ".bin" file generated
@@ -26,6 +37,7 @@ def default_hash_function(byte_sequence: bytes) -> str:
 
 
 # single thread function
+# do not load whole file into memory
 def save_content_and_return_hash(file_path, output_path, lpos, rpos, hash_function) -> str:
 
     # input phase
@@ -86,3 +98,52 @@ def split_file(file_path, output_path, max_file_size=1048675, hash_function=defa
     
     generate_summary_json_file(filename, output_json_path, hash_arr) # save a summary json file
     return len(hash_arr)
+
+
+
+def get_content_by_filename(abs_filepath: str) -> bytes: # load whole file into memory
+    fp = open(abs_filepath, "rb")
+    content = fp.read()
+    fp.close()
+    return content
+
+
+
+def merge_all_files_listed_in_summary(input_path: str, sum_file: str): # output to the dir of input_path
+
+    # loading phase
+    sum_file_path = os.path.join(input_path, sum_file)
+    assert os.path.isfile(sum_file_path)
+    fp = open(sum_file_path, "r", encoding="utf-8")
+    json_content = json.load(fp)
+    fp.close()
+
+    # parsing phase
+    assert isinstance(json_content, dict)
+    name     = json_content.get("name", generate_random_string() + ".bin")
+    hash_arr = json_content.get("list", [])
+    assert isinstance(hash_arr, list)
+
+    # output content into new file
+    output_path  = os.path.dirname(input_path)
+    output_file  = os.path.join(output_path, name)
+    if os.path.isfile(output_file):
+        sys.stderr.write("\033[1;33mwarning\033[0m: cuffers: file \033[1;33m%s\033[0m already exists, operation ignored.\n" % output_file)
+        return
+    fp = open(output_file, "wb")
+    for i in tqdm(range(len(hash_arr))):
+        hash_filename = os.path.join(input_path, hash_arr[i])
+        fp.write(get_content_by_filename(hash_filename))
+    fp.close()
+
+
+
+def merge_file_in_dir(input_path): # check summary files and merge them back to whole files
+    assert os.path.isdir(input_path)
+    summary_fils = [
+        filename 
+        for filename in os.listdir(input_path) 
+        if filename.startswith("summary.") and filename.endswith(".json")
+    ]
+    for sum_file in summary_fils:
+        merge_all_files_listed_in_summary(input_path, sum_file)

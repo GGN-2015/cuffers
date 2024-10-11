@@ -2,12 +2,14 @@ import sys
 import os
 
 from .main import split_file
+from .main import merge_file_in_dir
 
 
 
 # check: shell parameters count
 if len(sys.argv) != 3:
-    sys.stderr.write("usage: python3 -m cuffers <file> <output_path>\n")
+    sys.stderr.write("usage: python3 -m cuffers  <file> <output_path>\n")
+    sys.stderr.write("       python3 -m cuffers --merge <input_path>\n")
     exit(1)
 
 
@@ -15,6 +17,16 @@ if len(sys.argv) != 3:
 # read the parameters from sys.argv
 intput_path = sys.argv[1] #  input_path: should be a file
 output_path = sys.argv[2] # output_path: should be a directory
+
+
+
+# run merge logic
+if intput_path == "--merge":
+    if not os.path.isdir(output_path):
+        sys.stderr.write("cuffers: input folder not exists: %s\n" % output_path)
+        exit(1)
+    merge_file_in_dir(output_path)
+    exit(0)
 
 
 
