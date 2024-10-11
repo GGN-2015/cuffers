@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cuffers"
+description = "a python module to split a large file into smaller files with multiple processes."
+authors = [
+    { name = "GGN_2015", email = "premierbob@qq.com" }
+]
+version = "0.0.1"
+dependencies = [
+    "tqdm",
+]
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.11"
+
+[tool.setuptools]
+include-package-data = true
