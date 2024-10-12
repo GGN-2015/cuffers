@@ -1,5 +1,5 @@
 # cuffers
-a python module to split a large file into smaller files with multiple processes.
+a python module to split a large file into smaller files.
 
 ## install from github release
 1. go [https://github.com/GGN-2015/cuffers/releases](https://github.com/GGN-2015/cuffers/releases) and download a `.whl` file.
@@ -24,4 +24,3 @@ python3 -m cuffers <input_file> <output_folder>
 python3 -m cuffers --merge <input_folder>
 ```
 a merged file will be generated based on the fractions in `<input_folder>` and the `name` stated in `<input_folder>/summary.<index>.json`. the newly generated file will be placed right outside the folder `<input_folder>`, and if there has already been a file with the same name, the merge operation will be ignored (and you will get a warning output to stderr).
-
